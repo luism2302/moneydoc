@@ -8,7 +8,14 @@ type Command struct {
 	Name        string
 	Description string
 	Callback    func(*Config) error
-	Args        []string
+}
+
+func (cmd Command) Run(cfg *Config, args []string) error {
+	err := cmd.Callback(cfg)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 type Config struct {
@@ -21,7 +28,7 @@ func NewConfig(cmds map[string]Command) *Config {
 	}
 }
 
-func HelpCallBack(cfg *Config) error {
+func HelpCallback(cfg *Config) error {
 	fmt.Println("A CLI tool for controlling expenses")
 	fmt.Println("Usage: moneydoc [command] <args>")
 	fmt.Println("Supported Commands:")
@@ -34,13 +41,5 @@ func HelpCallBack(cfg *Config) error {
 var Help = Command{
 	Name:        "help",
 	Description: "Help about any command",
-	Callback:    HelpCallBack,
-}
-
-func (cmd Command) Run(cfg *Config) error {
-	err := cmd.Callback(cfg)
-	if err != nil {
-		return err
-	}
-	return nil
+	Callback:    HelpCallback,
 }
