@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
-	"github.com/luism2302/moneydoc/internal/commands"
 	"os"
 	"path/filepath"
+
+	"github.com/luism2302/moneydoc/internal/commands"
 )
 
 const (
@@ -12,7 +13,8 @@ const (
 )
 
 var supportedCommands = map[string]commands.Command{
-	"help": commands.Help,
+	"help":     commands.Help,
+	"register": commands.Register,
 }
 
 func getLocationDB() (dataDirLocation string, err error) {

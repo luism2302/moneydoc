@@ -32,7 +32,7 @@ func main() {
 	}
 
 	//Initialize commands
-	config := commands.NewConfig(supportedCommands)
+	config := commands.NewConfig(supportedCommands, db)
 
 	//Execute commands
 	if len(os.Args) <= 1 {
