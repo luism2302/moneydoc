@@ -15,6 +15,7 @@ const (
 var supportedCommands = map[string]commands.Command{
 	"help":     commands.Help,
 	"register": commands.Register,
+	"reset":    commands.Reset,
 }
 
 func getLocationDB() (dataDirLocation string, err error) {

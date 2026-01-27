@@ -2,11 +2,14 @@ package commands
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"strings"
 
 	"database/sql"
 
 	"github.com/luism2302/moneydoc/internal/database/sqlc"
+	"modernc.org/sqlite"
 )
 
 type Command struct {
@@ -47,7 +50,7 @@ func HelpCallback(cfg *Config, args []string) error {
 
 func RegisterCallback(cfg *Config, args []string) error {
 	if len(args) < 2 {
-		return fmt.Errorf("usage: register <username> <email>")
+		return errors.New("usage: register <username> <email>")
 	}
 	username := args[0]
 	email := args[1]
@@ -58,14 +61,23 @@ func RegisterCallback(cfg *Config, args []string) error {
 	}
 
 	createdUser, err := cfg.Queries.CreateNewUser(context.Background(), newUserParams)
-
+	var sqliteError *sqlite.Error
 	if err != nil {
-		return fmt.Errorf("Error creating new user: %s with email: %s. %w", username, email, err)
+		if errors.As(err, &sqliteError) {
+			failColumn := strings.Split(strings.Split(sqliteError.Error(), ".")[1], " ")[0]
+			return fmt.Errorf("%s already exists in users table", failColumn)
+		}
 	}
 
 	fmt.Printf("Created user: %s with email: %s", createdUser.Username, createdUser.Email)
 	return nil
+}
 
+func ResetCallback(cfg *Config, args []string) error {
+	if err := cfg.Queries.DeleteAllUsers(context.Background()); err != nil {
+		return errors.New("error deleting users from database")
+	}
+	return nil
 }
 
 var Help = Command{
@@ -78,4 +90,10 @@ var Register = Command{
 	Name:        "register",
 	Description: "registers a new user. usage: <username> <email>",
 	Callback:    RegisterCallback,
+}
+
+var Reset = Command{
+	Name:        "reset",
+	Description: "deletes every register from every table in the database",
+	Callback:    ResetCallback,
 }

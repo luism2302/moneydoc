@@ -6,3 +6,6 @@ INSERT INTO users(username, email, created_at, updated_at) VALUES (
     DATETIME('now')
 )
 RETURNING *;
+
+-- name: DeleteAllUsers :exec
+DELETE FROM users;
